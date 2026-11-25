@@ -18,11 +18,18 @@ def parse_function(expr: str):
         code = compile(expr, "<func>", "eval")
     except SyntaxError as e:
         raise ValueError(f"Синтаксическая ошибка: {e}")
+
+    # Разрешаем переменную x наравне с функциями из math
+    allowed = set(ALLOWED_NAMES.keys())
+    allowed.add("x")
+
     for name in code.co_names:
-        if name not in ALLOWED_NAMES:
+        if name not in allowed:
             raise ValueError(f"Неизвестное имя: {name}")
+
     def f(x):
         return eval(code, {"__builtins__": {}}, {**ALLOWED_NAMES, "x": x})
+
     return f
 
 
